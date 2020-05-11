@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 namespace Journey.SQLServerDataAccess.ConnectionCore
 {
-    public class ConnectionFactory:IConnectionFactory
+    public class ConnectionFactory : IConnectionFactory
     {
         private IOptions<ConnectionConfig> Config;
         private IDbConnection Connection;
@@ -18,7 +18,7 @@ namespace Journey.SQLServerDataAccess.ConnectionCore
             {
                 if (Connection == null)
                 {
-                    this.Connection = new SqlConnection(Config.Value.ConnectionString);
+                    Connection = new SqlConnection(Config.Value.ConnectionString);
                 }
                 if (this.Connection.State != ConnectionState.Open)
                 {
@@ -29,7 +29,7 @@ namespace Journey.SQLServerDataAccess.ConnectionCore
         }
         public void CloseConnection()
         {
-            if(this.Connection!=null && this.Connection.State == ConnectionState.Open)
+            if (this.Connection != null && this.Connection.State == ConnectionState.Open)
             {
                 this.Connection.Close();
             }

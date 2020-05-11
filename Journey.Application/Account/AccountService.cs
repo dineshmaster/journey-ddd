@@ -1,6 +1,8 @@
 ﻿using Journey.Domain.Model.Customer;
+using Journey.Domain.Model.Shared;
 using Journey.Infrastructure.Common;
 using Journey.Infrastructure.SMS;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,37 +16,46 @@ namespace Journey.Application.Account
         private readonly ISMSService SMSService;
         private readonly ICustomerRepository CustomerRepository;
         private readonly ISharedUtilities SharedUtilities;
+        private readonly ILogger<AccountService> Logger;
         public AccountService(ICustomerService customerSignUpService,
             ISMSService smsService,
             ICustomerRepository customerRepository,
-            ISharedUtilities sharedUtilities)
+            ISharedUtilities sharedUtilities,
+            ILogger<AccountService> logger)
         {
             this.CustomerSignUpService = customerSignUpService;
             this.SMSService = smsService;
             this.CustomerRepository = customerRepository;
             this.SharedUtilities = sharedUtilities;
+            this.Logger = logger;
         }
-        public async Task<CustomerSignUpResponse> SignUpCustomerAsync(CustomerSignUpRequest userRegistrationRequest)
+        public async Task<CustomerSignUpResponse> SignUpCustomerAsync(CustomerSignUpRequest userSignUpRequest)
         {
             CustomerSignUpResponse response = null;
 
-            PhoneNumber phoneNumber = new PhoneNumber(userRegistrationRequest.PhoneCode, userRegistrationRequest.PhoneNumber);
-            Customer customer = new Customer(userRegistrationRequest.EmailAddress,phoneNumber,userRegistrationRequest.Password);
+            PhoneNumber phoneNumber = new PhoneNumber(userSignUpRequest.PhoneCode, userSignUpRequest.PhoneNumber);
+            EmailAddress emailAddress = new EmailAddress(userSignUpRequest.EmailAddress);
+            Password password = new Password(userSignUpRequest.Password);
+            Customer customer = new Customer(emailAddress,phoneNumber,password);
             CustomerSignUpResult customerSignUpResult =await this.CustomerSignUpService.SignUpCustomerAsync(customer);
 
-            if(customerSignUpResult.CustomerSignUpStatus == CustomerSignUpStatus.Registered)
+            if (customerSignUpResult == null || customerSignUpResult.CustomerSignUpStatus == CustomerSignUpStatus.Failed)
             {
-                long otp =await GenerateOTPAsync(customerSignUpResult.CustomerId);
-                SMSService.SendSMS(string.Format(CustomerLiteral.PHONENUMBER_VERIFICATION_SMS, customer.PhoneNumber.PhoneNumberWithCode, otp)
-                    ,customer.PhoneNumber.PhoneNumberWithCode);
+                throw new CustomerSignUpFailedException(customer.EmailAddress);
             }
-            if (customerSignUpResult.CustomerId == 0)
+            if (customerSignUpResult.CustomerSignUpStatus == CustomerSignUpStatus.Registered)
             {
-                throw new Exception("User registration failed");
+                await Task.Run(async() =>
+                {
+                    long otp = await GenerateOTPAsync(customerSignUpResult.CustomerId);
+                    SMSService.SendSMS(string.Format(CustomerLiteral.PHONENUMBER_VERIFICATION_SMS, customer.PhoneNumber.PhoneNumberWithCode, otp)
+                        , customer.PhoneNumber.PhoneNumberWithCode);
+                });
             }
+            
             response = new CustomerSignUpResponse
             {
-                CustomerId = customer.CustomerId
+                CustomerId = customerSignUpResult.CustomerId
             };
             return response;
         }
@@ -52,7 +63,11 @@ namespace Journey.Application.Account
         {
             long otp = SharedUtilities.GenerateOTPHaving(ApplicationConstants.OTP_LENGTH);
             DateTime validUpTo = DateTime.UtcNow.AddMinutes(ApplicationConstants.OTP_LIFE_IN_MINUTES);
-            await CustomerRepository.GenerateSignUpOTPAsync(customerId, otp, validUpTo);
+            CustomerOTP customerOTP = new CustomerOTP(customerId, otp, validUpTo);
+            if(!await CustomerRepository.GenerateSignUpOTPAsync(customerOTP))
+            {
+                throw new SignUpOTPGenerationFailedException(otp, customerId);
+            }
             return otp;
         }
     }

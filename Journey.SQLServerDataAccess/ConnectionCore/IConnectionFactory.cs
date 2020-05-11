@@ -7,7 +7,7 @@ namespace Journey.SQLServerDataAccess.ConnectionCore
 {
     public interface IConnectionFactory
     {
-        public IDbConnection SQLConnection { get;}
+        public IDbConnection SQLConnection { get; }
         public void CloseConnection();
     }
 }

@@ -8,6 +8,6 @@ namespace Journey.Domain.Model.Customer
     public interface ICustomerRepository
     {
         Task<CustomerSignUpResult> AddAsync(Customer customer);
-        Task GenerateSignUpOTPAsync(int customerId, long otp, DateTime validUpTo);
+        Task<bool> GenerateSignUpOTPAsync(CustomerOTP customerOTP);
     }
 }

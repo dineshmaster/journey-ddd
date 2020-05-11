@@ -4,6 +4,7 @@
     {
         Registered,
         PhoneNumberVarified,
-        EmailVerified
+        EmailVerified,
+        Failed
     }
 }

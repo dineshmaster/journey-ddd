@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Model\Customer\Exceptions\" />
+    <ProjectReference Include="..\Journey.Infrastructure\Journey.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

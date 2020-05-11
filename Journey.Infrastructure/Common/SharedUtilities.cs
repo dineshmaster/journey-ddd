@@ -10,7 +10,7 @@ namespace Journey.Infrastructure.Common
     {
         private const int OTP_MAX_DIGIT_COUNT = 10;
         private const int OTP_MIN_DIGIT_COUNT = 1;
-        private const string OTP_ARGUMENT_EXCEPTION_MESSAGE = "digits should be greater than {0} and less than or equal to {1}";
+        private const string OTP_ARGUMENT_EXCEPTION_MESSAGE = "digits should be greater than or equal to {0} and less than or equal to {1}";
         public long GenerateOTPHaving(int digits=6)
         {
             if (digits <= 0 || digits > OTP_MAX_DIGIT_COUNT)
