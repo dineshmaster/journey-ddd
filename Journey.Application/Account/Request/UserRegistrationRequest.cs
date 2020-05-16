@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Journey.Application.Account
+namespace Journey.Application.Account.Request
 {
     public class CustomerSignUpRequest
     {

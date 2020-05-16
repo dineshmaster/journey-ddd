@@ -9,5 +9,7 @@ namespace Journey.Domain.Model.Customer
     {
         Task<CustomerSignUpResult> AddAsync(Customer customer);
         Task<bool> GenerateSignUpOTPAsync(CustomerOTP customerOTP);
+        Task<CustomerOTP> FindOTP(int customerId, double OTP);
+        Task<CustomerExistanceResult> CustomerExistsAysnc(Customer customer);
     }
 }

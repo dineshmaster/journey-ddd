@@ -1,5 +1,7 @@
 ﻿using Journey.API.Controllers;
 using Journey.Application.Account;
+using Journey.Application.Account.Request;
+using Journey.Application.Account.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

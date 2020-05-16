@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Journey.Domain.Model.Customer;
+using Journey.Domain.Model.Shared;
 using Journey.SQLServerDataAccess.ConnectionCore;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Journey.SQLServerDataAccess
+namespace Journey.SQLServerDataAccess.Customers
 {
     public class CustomerRepository : ICustomerRepository
     {
@@ -21,10 +22,10 @@ namespace Journey.SQLServerDataAccess
             CustomerSignUpResult customerSignUpResult = null;
             var spName = "spCustomerSignUp";
             var spParams = new DynamicParameters();
-            spParams.Add("@EmailAddress", customer.EmailAddress);
+            spParams.Add("@EmailAddress", customer.EmailAddress.Value);
             spParams.Add("@PhoneCode", customer.PhoneNumber.PhoneCode);
             spParams.Add("@PhoneNumber", customer.PhoneNumber.Number);
-            spParams.Add("@Password", customer.Password);
+            spParams.Add("@Password", customer.Password.Value);
             spParams.Add("@CustomerId", customer.CustomerId, null, ParameterDirection.Output);
 
             using (IDbConnection connection = ConnectionFactory.SQLConnection)
@@ -49,7 +50,41 @@ namespace Journey.SQLServerDataAccess
                 int rowsAffected = await connection.ExecuteAsync(spName, spParams, commandType: CommandType.StoredProcedure);
                 return rowsAffected > 0;
             }
+        }
+        public async Task<CustomerOTP> FindOTP(int customerId, double OTP)
+        {
+            var spName = "spFindCustomerSignUpOTPForVerification";
+            var spParams = new DynamicParameters();
+            spParams.Add("@CustomerId", customerId);
+            spParams.Add("@OTP", OTP);
 
+            using (IDbConnection connection = ConnectionFactory.SQLConnection)
+            {
+                CustomerOTP customerOTP = await connection.QueryFirstAsync<CustomerOTP>(spName, spParams, commandType: CommandType.StoredProcedure);
+                return customerOTP;
+            }
+        }
+        public async Task<CustomerExistanceResult> CustomerExistsAysnc(Customer customer)
+        {
+            var spName = "spCustomerExists";
+            var spParams = new DynamicParameters();
+            spParams.Add("@EmailAddress", customer.EmailAddress.Value);
+            spParams.Add("@PhoneNumberWithCode", customer.PhoneNumber.PhoneNumberWithCode);
+
+            using (IDbConnection connection = ConnectionFactory.SQLConnection)
+            {
+                dynamic result = await connection.QueryAsync(spName, spParams, commandType: CommandType.StoredProcedure);
+                if (result != null && result.Count>0)
+                {
+                    var firstRow = result[0];
+                    PhoneNumber phoneNumber = new PhoneNumber(firstRow.PhoneCode, firstRow.PhoneNumber);
+                    EmailAddress emailAddress = new EmailAddress(firstRow.EmailAddress);
+                    CustomerExistanceResult customerExistanceResult = new CustomerExistanceResult(emailAddress, phoneNumber);
+                    return customerExistanceResult;
+                }
+                
+            }
+            return null;
         }
     }
 }

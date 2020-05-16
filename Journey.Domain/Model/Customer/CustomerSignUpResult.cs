@@ -14,5 +14,10 @@ namespace Journey.Domain.Model.Customer
             this.CustomerId = customerId;
             CustomerSignUpStatus = customerId>0?CustomerSignUpStatus.Registered:CustomerSignUpStatus.Failed;
         }
+        public CustomerSignUpResult(int customerId,CustomerSignUpStatus customerSignUpStatus)
+        {
+            this.CustomerId = customerId;
+            this.CustomerSignUpStatus = customerSignUpStatus;
+        }
     }
 }

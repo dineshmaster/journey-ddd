@@ -15,7 +15,7 @@ namespace Journey.API.Infrastructure
         public Uri BaseUri { get; set; }
         public BaseController(IConfiguration configuration)
         {
-            this.BaseUri =new Uri(configuration["Application.BaseUri"].ToString());
+            this.BaseUri =new Uri(configuration["Application:BaseUri"].ToString());
         }
         public Uri GetPath(string relativeUri)
         {

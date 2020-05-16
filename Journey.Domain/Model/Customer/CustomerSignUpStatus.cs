@@ -5,6 +5,7 @@
         Registered,
         PhoneNumberVarified,
         EmailVerified,
-        Failed
+        Failed,
+        AlreadyExists
     }
 }

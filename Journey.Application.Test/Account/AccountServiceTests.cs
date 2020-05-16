@@ -1,14 +1,12 @@
-﻿using Castle.Core.Logging;
-using Journey.Application.Account;
+﻿using Journey.Application.Account;
+using Journey.Application.Account.Request;
+using Journey.Application.Account.Response;
 using Journey.Domain.Model.Customer;
-using Journey.Domain.Model.Shared;
 using Journey.Infrastructure.Common;
 using Journey.Infrastructure.SMS;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -85,7 +83,7 @@ namespace Journey.Application.Test.Account
                 CustomerSignUpResponse response = await accountService.SignUpCustomerAsync(userSignUpRequest);
 
                 // assert
-                Assert.Equal(0, response.CustomerId);
+                Assert.Null(response);
             }
             catch (Exception ex)
             {

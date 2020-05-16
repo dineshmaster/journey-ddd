@@ -2,15 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 
 namespace Journey.Application.Account
 {
     [Serializable]
-    public class SignUpOTPGenerationFailedException:ExceptionBase
+    public class SignUpOTPGenerationFailedException : ExceptionBase
     {
         private const string MESSAGE = "Storing OTP {0} in database failed for customer {1} at {2}";
-        public SignUpOTPGenerationFailedException(long otp, int customerId) :base(string.Format(MESSAGE,otp,customerId,DateTime.UtcNow))
+        public SignUpOTPGenerationFailedException(long otp, int customerId) : base(string.Format(MESSAGE, otp, customerId, DateTime.UtcNow))
         {
 
         }

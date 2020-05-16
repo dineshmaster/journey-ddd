@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Journey.Application.Account.Request;
+using Journey.Application.Account.Response;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;

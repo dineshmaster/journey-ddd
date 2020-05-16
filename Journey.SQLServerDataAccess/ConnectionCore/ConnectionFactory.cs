@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Journey.Infrastructure.Common;
+using Microsoft.Extensions.Options;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -22,6 +23,7 @@ namespace Journey.SQLServerDataAccess.ConnectionCore
                 }
                 if (this.Connection.State != ConnectionState.Open)
                 {
+                    this.Connection.ConnectionString = Config.Value.ConnectionString;
                     this.Connection.Open();
                 }
                 return this.Connection;

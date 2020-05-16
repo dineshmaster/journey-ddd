@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Journey.SQLServerDataAccess.ConnectionCore
+namespace Journey.Infrastructure.Common
 {
     public class ConnectionConfig
     {

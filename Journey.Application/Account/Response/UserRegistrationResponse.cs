@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Journey.Application.Account
+namespace Journey.Application.Account.Response
 {
     public class CustomerSignUpResponse
     {
